@@ -31,7 +31,8 @@ def run_args():
   .'   \_.'             '    \  \  \ \ \._,\ '/           
                        '------'  '---'`--'  `"            
     Ver: {0}
-    Support: https://gitlab.com/mahpour/Isokall
+    Author: Amin Mahpour
+    Support: https://gitlab.com/AminMahpour/Isokall
 ----------------------------------------------------------
     """.format(__version__)
 
