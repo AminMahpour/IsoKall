@@ -1,2 +1,2 @@
 # IsoKall
-Iso-see and Kallisto integration
+Iso-seq and Kallisto integration
