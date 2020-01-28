@@ -125,7 +125,6 @@ def main():
         run_conversion(args.input_bed, args.input_tsv, args.output_bed)
     elif args.subparser_name == "filter":
         filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file, args.output_name)
-        pass
     else:
         parser.print_help()
 
@@ -167,7 +166,8 @@ def filter_TSS(dist, classification_txt, input_fasta, input_genepred, output_fil
     print(gp_record)
 
     SeqIO.write(list_fasta_record, "{}.fasta".format(output_file), "fasta")
-    with open("{}}.gp".format(output_file), "w") as handle:
+
+    with open("{}.gp".format(output_file), "w") as handle:
         handle.writelines([i for i in gp_record])
 
 
