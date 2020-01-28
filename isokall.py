@@ -3,6 +3,27 @@ import argparse
 import os.path
 from argparse import RawTextHelpFormatter
 
+
+class MyArgumentParser(argparse.ArgumentParser):
+
+    def __init__(self, *args, **kwargs):
+        super(MyArgumentParser, self).__init__(*args, **kwargs)
+
+        self.error_message = ''
+
+    def error(self, message):
+        self.error_message = message
+
+    def parse_args(self, *args, **kwargs):
+        # catch SystemExit exception to prevent closing the application
+        result = None
+        try:
+            result = super().parse_args(*args, **kwargs)
+        except SystemExit:
+            pass
+        return result
+
+
 __version__ = "0.0.1"
 __prog_name__ = ""
 
@@ -37,7 +58,7 @@ def run_args():
     """.format(__version__)
 
     # Instantiate the parser
-    parser = argparse.ArgumentParser(prog=__prog_name__, description=usage, formatter_class=RawTextHelpFormatter)
+    parser = MyArgumentParser(prog=__prog_name__, description=usage, formatter_class=RawTextHelpFormatter)
 
     parser.add_argument('-v', '--version', action='version', version='{version}'.format(version=__version__),
                         help='Get version number of this software.')
