@@ -90,5 +90,47 @@ def main():
     run_conversion(args.input_bed, args.input_tsv, args.output_bed)
 
 
+def filter_TSS(dist, classification_txt, input_fasta, input_genepred, output_file):
+    from Bio import SeqIO
+
+    TSS_50 = []
+
+    skip = False
+    with open(classification_txt, "r") as data:
+
+        for line in data:
+            if skip and line.split("\t")[12] != "NA":
+                # print(line.split("\t")[10])
+                diff = abs(int(line.split("\t")[12]))
+                # print(diff)
+                if diff < dist:
+                    TSS_50.append(line.split("\t")[0])
+            skip = True
+
+    number_of_records = len(TSS_50)
+
+    print(f"{number_of_records} records were matched!")
+
+    list_fasta_record = []
+    with open(input_fasta, "r") as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            id = record.id.split("|")[0]
+
+            if id in TSS_50:
+                list_fasta_record.append(record)
+
+    gp_record = []
+    with open(input_genepred, "r") as handle:
+        for line in handle:
+            if line.split("\t")[0] in TSS_50:
+                gp_record.append(line)
+
+    print(gp_record)
+
+    SeqIO.write(list_fasta_record, "{}.fasta".format(output_file), "fasta")
+    with open("{}}.gp".format(output_file), "w") as handle:
+        handle.writelines([i for i in gp_record])
+
+
 if __name__ == "__main__":
     main()
