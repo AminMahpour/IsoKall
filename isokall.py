@@ -66,7 +66,7 @@ def run_args():
 
     args = parser.parse_args()
 
-    return args
+    return args, parser
 
 
 def run_conversion(input_bed, input_abund, output_bed):
@@ -98,13 +98,15 @@ def run_conversion(input_bed, input_abund, output_bed):
 
 
 def main():
-    args = run_args()
+    args, parser = run_args()
 
     if args.subparser_name == "quant":
         run_conversion(args.input_bed, args.input_tsv, args.output_bed)
     elif args.subparser_name == "filter":
         filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file, args.output_name)
         pass
+    else:
+        parser.print_help()
 
 def filter_TSS(dist, classification_txt, input_fasta, input_genepred, output_file):
     from Bio import SeqIO
