@@ -42,16 +42,27 @@ def run_args():
     parser.add_argument('-v', '--version', action='version', version='{version}'.format(version=__version__),
                         help='Get version number of this software.')
 
+    subparsers = parser.add_subparsers(help='sub-command help', dest='subparser_name')
+
+    parser_quant = subparsers.add_parser('quant', help='Add Kallisto quant data to BED12 files')
+    # parser_quant.add_argument('bar', type=int, help='bar help')
     # Required positional argument
-    parser.add_argument('input_bed', type=str,
-                        help='An input Bed12 formatted file from the ISO-seq pipeline')
+    parser_quant.add_argument('input_bed', type=str,
+                              help='An input Bed12 formatted file from the ISO-seq pipeline')
 
     # Required positional argument
-    parser.add_argument('input_tsv', type=str,
-                        help='The Kallisto tsv-formatted output file')
+    parser_quant.add_argument('input_tsv', type=str,
+                              help='The Kallisto tsv-formatted output file')
 
-    parser.add_argument('output_bed', type=str,
-                        help='The name for output bed12-formatted file')
+    parser_quant.add_argument('output_bed', type=str,
+                              help='The name for output bed12-formatted file')
+
+    parser_filter = subparsers.add_parser('filter', help='Filter by TSS distance.')
+    parser_filter.add_argument('-dist_TSS', '-g', type=int, help='Distance from TSS (e.g. 100 nucleotide)')
+    parser_filter.add_argument('-classification_file', '-c', type=str, help='Input classification file from Qanti2')
+    parser_filter.add_argument('-fasta_file', '-f', type=str, help='Input FASTA file from Qanti2')
+    parser_filter.add_argument('-input_genepred_file', '-gp', type=str, help='Input GenePred file from Qanti2')
+    parser_filter.add_argument('-output_name', '-o', type=str, help='Prefix for output files')
 
     args = parser.parse_args()
 
@@ -74,7 +85,8 @@ def run_conversion(input_bed, input_abund, output_bed):
         for line in y.readlines():
             line = line.strip("\n").split("\t")
             if line[0] not in chr_list: continue
-            if line[0] == "chrMT": line[0] = "chrM"
+            if line[0] == "chrMT":
+                line[0] = "chrM"
 
             if line[3] in l.keys():
                 line[4] = l[line[3]]
@@ -87,8 +99,12 @@ def run_conversion(input_bed, input_abund, output_bed):
 
 def main():
     args = run_args()
-    run_conversion(args.input_bed, args.input_tsv, args.output_bed)
 
+    if args.subparser_name == "quant":
+        run_conversion(args.input_bed, args.input_tsv, args.output_bed)
+    elif args.subparser_name == "filter":
+        filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file, args.output_name)
+        pass
 
 def filter_TSS(dist, classification_txt, input_fasta, input_genepred, output_file):
     from Bio import SeqIO
