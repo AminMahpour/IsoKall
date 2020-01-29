@@ -122,9 +122,19 @@ def main():
     args, parser = run_args()
 
     if args.subparser_name == "quant":
-        run_conversion(args.input_bed, args.input_tsv, args.output_bed)
+        if args.input_bed == None or args.input_tsv == None or args.output_bed:
+            parser.print_help()
+            print("Please provide all arguments.")
+        else:
+            run_conversion(args.input_bed, args.input_tsv, args.output_bed)
+
     elif args.subparser_name == "filter":
-        filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file, args.output_name)
+        if args.dist_TSS == None or args.classification_file == None or args.fasta_file == None or args.input_genepred_file == None or args.output_name:
+            parser.print_help()
+            print("Please provide all arguments.")
+        else:
+            filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file,
+                       args.output_name)
     else:
         parser.print_help()
 
