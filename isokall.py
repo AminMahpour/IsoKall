@@ -64,26 +64,24 @@ def run_args():
                         help='Get version number of this software.')
 
     subparsers = parser.add_subparsers(help='sub-command help', dest='subparser_name')
-
     parser_quant = subparsers.add_parser('quant', help='Add Kallisto quant data to BED12 files')
     # parser_quant.add_argument('bar', type=int, help='bar help')
     # Required positional argument
+
     parser_quant.add_argument('input_bed', type=str,
                               help='An input Bed12 formatted file from the ISO-seq pipeline')
-
     # Required positional argument
     parser_quant.add_argument('input_tsv', type=str,
                               help='The Kallisto tsv-formatted output file')
-
     parser_quant.add_argument('output_bed', type=str,
                               help='The name for output bed12-formatted file')
 
     parser_filter = subparsers.add_parser('filter', help='Filter by TSS distance.')
-    parser_filter.add_argument('-dist_TSS', '-g', type=int, help='Distance from TSS (e.g. 100 nucleotide)')
-    parser_filter.add_argument('-classification_file', '-c', type=str, help='Input classification file from Qanti2')
-    parser_filter.add_argument('-fasta_file', '-f', type=str, help='Input FASTA file from Qanti2')
-    parser_filter.add_argument('-input_genepred_file', '-gp', type=str, help='Input GenePred file from Qanti2')
-    parser_filter.add_argument('-output_name', '-o', type=str, help='Prefix for output files')
+    parser_filter.add_argument('dist_TSS', type=int, help='Absolute distance from TSS (e.g. 100 nucleotide)')
+    parser_filter.add_argument('classification_file', type=str, help='Input classification file from Qanti2')
+    parser_filter.add_argument('fasta_file', type=str, help='Input FASTA file from Qanti2')
+    parser_filter.add_argument('input_genepred_file', type=str, help='Input GenePred file from Qanti2')
+    parser_filter.add_argument('output_name', type=str, help='Prefix for output files')
 
     args = parser.parse_args()
 
@@ -120,23 +118,20 @@ def run_conversion(input_bed, input_abund, output_bed):
 
 def main():
     args, parser = run_args()
-
-    if args.subparser_name == "quant":
-        if args.input_bed == None or args.input_tsv == None or args.output_bed:
-            parser.print_help()
-            print("Please provide all arguments.")
-        else:
+    if args is not None:
+        if args.subparser_name == "quant":
+            # TODO Test for input args
+            # parser.parse_args('quant -h'.split())
             run_conversion(args.input_bed, args.input_tsv, args.output_bed)
 
-    elif args.subparser_name == "filter":
-        if args.dist_TSS == None or args.classification_file == None or args.fasta_file == None or args.input_genepred_file == None or args.output_name:
-            parser.print_help()
-            print("Please provide all arguments.")
-        else:
+        elif args.subparser_name == "filter":
+            # parser.parse_args('filter -h'.split())
             filter_TSS(args.dist_TSS, args.classification_file, args.fasta_file, args.input_genepred_file,
                        args.output_name)
-    else:
-        parser.print_help()
+            pass
+        else:
+            parser.parse_args('-h'.split())
+
 
 def filter_TSS(dist, classification_txt, input_fasta, input_genepred, output_file):
     from Bio import SeqIO
